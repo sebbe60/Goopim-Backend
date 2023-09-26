@@ -9,7 +9,9 @@ import uuid
 import os, pathlib
 #from flask_mail import Mail, Message
 from flask_security import login_user, SQLAlchemyUserDatastore, Security, roles_required, user_registered, roles_accepted
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, func, or_, orm, event
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Query
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -35,7 +37,6 @@ import nltk
 import re
 import string
 import random
-
 from langchain.embeddings import OpenAIEmbeddings
 
 
@@ -66,21 +67,19 @@ from google_auth_oauthlib.flow import Flow
 #from google.auth.transport import requests
 
 import google
+
 #from app import
 #from app.db_util import get_current_cart, get_title_from_model_col, get_session_cart, get_current_cart_items,get_current_resale_cart,\
 #get_current_resale_cart_items
-#from config import Config
+from config import Config
 #from app.config import Config
-from app import config, models
-from app.models import models
+# from app import config, models
+from models.model import *
 #from models import models
-#from models.models import *
-from app.models.models import *
-
-
+# import models.model
 
 from enum import Enum
-from app.helpers import add_or_update_user_function, find_recommended_providers_function
+from helpers import add_or_update_user_function, find_recommended_providers_function
 
 
 # custom Flask class to run some commands before app execution
@@ -98,8 +97,9 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading", manag
 
 socketio.init_app(app, cors_allowed_origins="*")
 
-app.config.from_object("app.config.Config")
+app.config.from_object(Config)
 
+# db = SQLAlchemy()
 db.init_app(app)
 
 CORS(app)
@@ -111,7 +111,16 @@ endpoint_secret = os.getenv("STRIPE_WEBSOCKET_KEY")
 
 nltk.download('punkt')
 nltk.download('stopwords')
-app.json_encoder = CustomJSONEncoder
+
+# class CustomJSONEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, Enum):
+#             return obj.name
+#         if isinstance(obj, datetime):
+#             return obj.isoformat()
+#         return super().default(obj)
+
+app.json = CustomJSONEncoder
 
 # #new config
 # app.config["Access-Control-Allow-Headers"]="Content-Type"
@@ -2625,7 +2634,6 @@ def create_review():
     else:
         return jsonify({'error': 'how did you get here'}),
 
-
 @event.listens_for(Review, 'after_insert')
 def update_average_rating(mapper, connection, review):
     review_owner = review.review_owner
@@ -2755,7 +2763,11 @@ def vector_db_status():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.route('/health', methods=["GET"])
+def health_check():
+    return {"result": "hi there"}
+
 
 if __name__ == "__main__":
-#    app.run(port=5000)
-    socketio.run(app, port=5000)
+    app.run(port=5000)
+    # socketio.run(app, port=5000)
