@@ -6,38 +6,9 @@ on:
     branches: [ prod ]
 
 jobs:
-
-  Build:
-
-    runs-on: ubuntu-latest
-    environment:
-      name: Development
-    strategy:
-      matrix:
-        python-version: [3.9]
-
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test with pytest
-      run: |
-        if [ -d tests ] || [ -d test ]; then FLASK_ENV=${{secrets.FLASK_ENV}} python -m pytest; fi
-
+  
   DeployDev:
     name: Deploy to Dev
-    # if: github.event_name == 'pull_request'
-    needs: [Build]
     runs-on: ubuntu-latest
     environment:
       name: development
