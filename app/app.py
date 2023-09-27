@@ -120,7 +120,7 @@ nltk.download('stopwords')
 #             return obj.isoformat()
 #         return super().default(obj)
 
-app.json = CustomJSONEncoder
+# app.json = CustomJSONEncoder
 
 # #new config
 # app.config["Access-Control-Allow-Headers"]="Content-Type"
@@ -2765,7 +2765,7 @@ def vector_db_status():
 
 @app.route('/health', methods=["GET"])
 def health_check():
-    return {"result": "hi there"}
+    return jsonify({"result": "hi there"})
 
 
 if __name__ == "__main__":
