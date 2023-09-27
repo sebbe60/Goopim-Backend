@@ -1,9 +1,9 @@
 name: "Development Build"
 on:
   push:
-    branches: [ development ]
+    branches: [ prod ]
   pull_request:
-    branches: [ development ]
+    branches: [ prod ]
 
 jobs:
 
