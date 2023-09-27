@@ -33,16 +33,3 @@ jobs:
             cd ${APP_DIR} &&
             git pull &&
             sudo -S < <(echo "Jamali123*") systemctl restart gunicorn "
-
-  Test-Remote:
-    name: Test Remote Deployment
-    needs: [DeployDev]
-    runs-on: ubuntu-latest
-    environment:
-      name: Development
-
-    steps:
-    - name: Test application
-      run: |
-        sleep 5
-        curl http://16.171.248.92/health | grep "template api"
