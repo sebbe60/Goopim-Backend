@@ -2765,7 +2765,7 @@ def vector_db_status():
 
 @app.route('/health', methods=["GET"])
 def health_check():
-    return jsonify({"result": "hi"})
+    return jsonify({"result": "deployment complete"})
 
 
 if __name__ == "__main__":

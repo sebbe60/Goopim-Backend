@@ -45,4 +45,4 @@ jobs:
     - name: Test application
       run: |
         sleep 5
-        curl ${{ secrets.HOST_NAME  }}:${{ secrets.PORT  }}/health | grep "template api"
+        curl http://16.171.248.92/health | grep "template api"
