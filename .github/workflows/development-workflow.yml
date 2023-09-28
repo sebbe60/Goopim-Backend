@@ -32,4 +32,4 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} "
             cd ${APP_DIR} &&
             git pull &&
-            sudo -S < <(echo "Jamali123*") systemctl restart gunicorn "
+            sudo -S < <(echo "${USER_PASSWORD}") systemctl restart gunicorn "
