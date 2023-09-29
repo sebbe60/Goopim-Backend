@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     SECRET_KEY = '123456789'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://icagntjypbchsy:b556dc64b17235d552e42a94193940618b7c608836785cd7cd9d941dd8f841af@ec2-54-234-13-16.compute-1.amazonaws.com:5432/d3ejd41gv0nc3f'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://icagntjypbchsy:b556dc64b17235d552e42a94193940618b7c608836785cd7cd9d941dd8f841af@database-1.cdmhtriqsond.eu-north-1.rds.amazonaws.com:5432/postgres'
 # os.getenv("DATABASE_URI",'postgresql://')
     #SQLALCHEMY_DATABASE_URI =    'postgresql://postgres:123456789@localhost:5432/goopim'
     #os.getenv("URI", "sqlite://")
