@@ -286,7 +286,7 @@ def update_user_profile_image_cometchat(uuid, profile_url):
     response = requests.put(url, json=payload, headers=headers)
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def signup_user():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
@@ -310,7 +310,7 @@ def signup_user():
     db.session.add(payment_account)
     db.session.commit()
     return jsonify({'message': 'registered successfully'})
-@app.route('/adminregister', methods=['POST'])
+@app.route('/api/adminregister', methods=['POST'])
 @jwt_required()
 def signup_adminuser():
     is_admin = get_jwt_identity()['id']
@@ -329,7 +329,7 @@ def signup_adminuser():
     db.session.commit()
     return jsonify({'message': 'registered successfully'})
 #data['is_user'], is_provider=data['is_provider']
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 
 def login_user():
     email = request.json.get("email", None)
@@ -355,7 +355,7 @@ def login_user():
     return jsonify({"message":"login required"}),401
 
 
-@app.route('/adminlogin', methods=['POST'])
+@app.route('/api/adminlogin', methods=['POST'])
 
 def login_admin():
     email = request.json.get("email", None)
@@ -387,7 +387,7 @@ def login_admin():
 
 CLIENT_ID = 'your-google-client-id'
 
-@app.route('/google-login', methods=['POST'])
+@app.route('/api/google-login', methods=['POST'])
 def google_login():
     token = request.json['token']
     try:
@@ -439,7 +439,7 @@ def google_login():
 #     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 #
 #
-# @app.route('/upload-profile-picture', methods=['POST'])
+# @app.route('/api/upload-profile-picture', methods=['POST'])
 # def upload_profile_picture():
 #     if 'file' not in request.files:
 #         return jsonify({'error': 'No file part in the request'})
@@ -457,7 +457,7 @@ def google_login():
 #         return jsonify({'profile_img_url': profile_img_url})
 #
 #     return jsonify({'error': 'Invalid file type'})
-@app.route('/check_username', methods=['POST'])
+@app.route('/api/check_username', methods=['POST'])
 def check_username():
     goopim_username = request.json.get('goopim_username')
 
@@ -485,7 +485,7 @@ def update_unique_username(goopim_username, user_id):
 
 
     return goopim_username
-@app.route('/api/users/update', methods=['PUT'])
+@app.route('/api/api/users/update', methods=['PUT'])
 @jwt_required()
 def update_user():
     current_user_id = get_jwt_identity()['id']
@@ -588,7 +588,7 @@ def update_user():
         db.session.rollback()
         return jsonify({'message': 'An error occurred while updating user information'}), 500
 
-@app.route('/myprofile', methods=['GET'])
+@app.route('/api/myprofile', methods=['GET'])
 @jwt_required()
 def get_user():
     current_user_id = get_jwt_identity()["id"]
@@ -600,7 +600,7 @@ def get_user():
     for company in past_companies:
         users_past_companies.append((company.id, company.name, company.logo_url))
     return jsonify({"myprofile":user.to_dict(),'pastcompany':users_past_companies})
-@app.route('/u/<string:goopim_username>', methods=['GET'])
+@app.route('/api/u/<string:goopim_username>', methods=['GET'])
 def get_user_details(goopim_username):
     user = Users.query.filter_by(goopim_username=goopim_username).first()
 
@@ -702,7 +702,7 @@ def get_providers():
         provider["profile_button"] = f'<a href="{provider.get("id")}" target="_blank">View profile</a>'
 
     return jsonify({"topproviders":top_providers})
-@app.route('/searchlogs', methods=['GET'])
+@app.route('/api/searchlogs', methods=['GET'])
 def get_search_logs():
     page = request.args.get('page', 1, type=int)
     per_page = 100
@@ -725,7 +725,7 @@ def get_search_logs():
         'prev_page': prev_page,
     })
 
-# @app.route('/searchlogs', methods=['GET'])
+# @app.route('/api/searchlogs', methods=['GET'])
 # def get_search_logs():
 #     page = request.args.get('page', 1, type=int)
 #     per_page = 100
@@ -747,7 +747,7 @@ def get_search_logs():
 #     })
 
 # create a new message
-@app.route('/api/messages', methods=['POST'])
+@app.route('/api/api/messages', methods=['POST'])
 @jwt_required()
 def create_message():
     data = request.json
@@ -947,7 +947,7 @@ def add_user_to_room(user_id, conversation_id):
 
     return jsonify({'success': f'User joined conversation {conversation_id}.'}), 200
 #create a contract
-@app.route('/contracts', methods=['POST'])
+@app.route('/api/contracts', methods=['POST'])
 @jwt_required()
 def create_contract():
 
@@ -1046,7 +1046,7 @@ def create_contract():
     return jsonify({'message': 'Contract created successfully'})
 
 #inputs contact_id, contract_status (REJECTED or ACCEPTED), conversation_id
-@app.route('/contracts/<int:contract_id>/edit', methods=['PUT'])
+@app.route('/api/contracts/<int:contract_id>/edit', methods=['PUT'])
 @jwt_required()
 def edit_contract(contract_id):
     current_user_id = get_jwt_identity()['id']
@@ -1289,7 +1289,7 @@ def edit_contract(contract_id):
         return jsonify({'error': 'Invalid contract status'}), 400
 
 
-@app.route('/contracts/<int:contract_id>', methods=['GET'])
+@app.route('/api/contracts/<int:contract_id>', methods=['GET'])
 @jwt_required()
 def get_single_contract(contract_id):
     current_user_id = get_jwt_identity()['id']
@@ -1299,7 +1299,7 @@ def get_single_contract(contract_id):
         return  jsonify({'contract':[contract.serialize()]})
     else:
         return jsonify({'message':'not authorized'})
-@app.route('/users_contract', methods=['GET'])
+@app.route('/api/users_contract', methods=['GET'])
 @jwt_required()
 def get_all_users_contracts():
   
@@ -1318,7 +1318,7 @@ def get_all_users_contracts():
     return jsonify({"contracts": serialized_contracts})
 
 #retrieve project details
-@app.route('/project/<int:project_id>', methods=['GET'])
+@app.route('/api/project/<int:project_id>', methods=['GET'])
 @jwt_required()
 def get_project_data(project_id):
     project = Project.query.get(project_id)
@@ -1339,7 +1339,7 @@ def get_project_data(project_id):
 
 
 #retrieve project details
-@app.route('/project/<int:project_id>', methods=['PUT'])
+@app.route('/api/project/<int:project_id>', methods=['PUT'])
 @jwt_required()
 def edit_project_data(project_id):
     data = request.get_json()
@@ -1365,7 +1365,7 @@ def edit_project_data(project_id):
 
     })
 #get all project for a user
-@app.route('/projects', methods=['GET'])
+@app.route('/api/projects', methods=['GET'])
 @jwt_required()
 def get_projects():
     current_user_id = get_jwt_identity()['id']
@@ -1380,7 +1380,7 @@ def get_projects():
     return jsonify([p.serialize() for p in projects])
 
 
-@app.route('/withdraw', methods=['POST'])
+@app.route('/api/withdraw', methods=['POST'])
 @jwt_required()
 def withdraw():
     current_user_id = get_jwt_identity()["id"]
@@ -1412,7 +1412,7 @@ def withdraw():
 
     return jsonify(new_withdrawal_request), 201
 
-@app.route('/withdrawals/all', methods=['GET'])
+@app.route('/api/withdrawals/all', methods=['GET'])
 @jwt_required()
 def get_user_withdrawals():
     current_user_id = get_jwt_identity()["id"]
@@ -1428,7 +1428,7 @@ def is_admin(id):
         return True
     else:
         return False
-@app.route('/admin/withdrawals/pending', methods=['GET'])
+@app.route('/api/admin/withdrawals/pending', methods=['GET'])
 @jwt_required()
 def get_pending_withdrawals():
     current_user = get_jwt_identity()['id']
@@ -1441,7 +1441,7 @@ def get_pending_withdrawals():
         return jsonify({'message': 'Unauthorized access'}), 401
 
 
-@app.route('/admin/withdrawals/processing', methods=['GET'])
+@app.route('/api/admin/withdrawals/processing', methods=['GET'])
 @jwt_required()
 def get_processing_withdrawals():
     current_user = get_jwt_identity()['id']
@@ -1454,7 +1454,7 @@ def get_processing_withdrawals():
         return jsonify({'message': 'Unauthorized access'}), 401
 
 
-@app.route('/admin/withdrawals/completed', methods=['GET'])
+@app.route('/api/admin/withdrawals/completed', methods=['GET'])
 @jwt_required()
 def get_completed_withdrawals():
     current_user = get_jwt_identity()['id']
@@ -1469,7 +1469,7 @@ def get_completed_withdrawals():
 
 
 
-@app.route('/admin/withdrawals/<int:id>', methods=['PUT'])
+@app.route('/api/admin/withdrawals/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_withdrawal_status(id):
     withdrawal = WithdrawalRequest.query.get_or_404(id)
@@ -1489,7 +1489,7 @@ def update_withdrawal_status(id):
 
 
 
-@app.route('/charge', methods=['POST'])
+@app.route('/api/charge', methods=['POST'])
 def charge():
     # Get payment details from request body
     amount = request.json.get('amount')
@@ -1520,7 +1520,7 @@ def charge():
     except stripe.error.StripeError as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/deliverables', methods=['POST'])
+@app.route('/api/deliverables', methods=['POST'])
 @jwt_required()
 def create_deliverable():
     user_id = get_jwt_identity()['id']
@@ -1559,7 +1559,7 @@ def create_deliverable():
 
     return jsonify({'deliverables':deliverable.serialize()}), 201
 
-@app.route('/timelines', methods=['POST'])
+@app.route('/api/timelines', methods=['POST'])
 @jwt_required()
 def create_timeline():
     user_id = get_jwt_identity()['id']
@@ -1599,7 +1599,7 @@ def create_timeline():
 
     return jsonify({'timelines':timeline.serialize()}), 201
 
-@app.route('/projects/<int:project_id>/deliverables', methods=['GET'])
+@app.route('/api/projects/<int:project_id>/deliverables', methods=['GET'])
 @jwt_required()
 def get_deliverables(project_id):
     user_id = get_jwt_identity()['id']
@@ -1614,7 +1614,7 @@ def get_deliverables(project_id):
 
     return jsonify({'deliverables':[deliverable.serialize() for deliverable in deliverables]}), 200
 
-@app.route('/projects/<int:project_id>/timelines', methods=['GET'])
+@app.route('/api/projects/<int:project_id>/timelines', methods=['GET'])
 @jwt_required()
 def get_timelines(project_id):
     user_id = get_jwt_identity()['id']
@@ -1680,7 +1680,7 @@ def calculate_order_amount(items):
     # people from directly manipulating the amount on the client
     #total = items[0].id
     return 1000
-@app.route('/create-payment-intent', methods=['POST'])
+@app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment():
     try:
         data = json.loads(request.data)
@@ -1697,7 +1697,7 @@ def create_payment():
         })
     except Exception as e:
         return jsonify(error=str(e)), 403
-@app.route('/api/deposit', methods=['POST'])
+@app.route('/api/api/deposit', methods=['POST'])
 @jwt_required()
 def create_paymentY():
     data = json.loads(request.data)
@@ -1729,7 +1729,7 @@ def create_paymentY():
 
     return jsonify(client_secret=payment_intent.client_secret)
 
-@app.route('/api/depo', methods=['POST'])
+@app.route('/api/api/depo', methods=['POST'])
 @jwt_required()
 def stripePaymentElement():
     data = json.loads(request.data)
@@ -1804,14 +1804,14 @@ def stripePaymentElement():
     # return jsonify({'status': intent.status})
 
 
-@app.route('/projects/<int:project_id>/escrow_accounts/<int:user_id>')
+@app.route('/api/projects/<int:project_id>/escrow_accounts/<int:user_id>')
 def get_project_escrow_accounts(project_id, user_id):
     escrow_accounts = MilestoneEscrowAccount.query.filter_by(project_id=project_id, user_id=user_id).all()
     if not escrow_accounts:
         return jsonify({'error': 'No escrow accounts found.'}), 404
     return jsonify({'escrow_accounts': [account.to_dict() for account in escrow_accounts]})
 
-@app.route('/release_milestone', methods=['POST'])
+@app.route('/api/release_milestone', methods=['POST'])
 @jwt_required()
 def release_milestone():
     data = request.json
@@ -1847,7 +1847,7 @@ def release_milestone():
     return jsonify({'success': True, 'amount': amount,'message':'Milestone released'}), 200
 
 
-@app.route('/admin/users', methods=['GET'])
+@app.route('/api/admin/users', methods=['GET'])
 @jwt_required()
 def get_all_users():
     current_user = Users.query.filter_by(public_id=get_jwt_identity()["public_id"]).first()
@@ -1859,7 +1859,7 @@ def get_all_users():
 
 
 # Get all projects
-@app.route('/admin/projects', methods=['GET'])
+@app.route('/api/admin/projects', methods=['GET'])
 @jwt_required()
 def get_admin_projects():
     current_user = get_jwt_identity()['id']
@@ -1875,7 +1875,7 @@ def get_admin_projects():
 
 
 # Get a specific project by ID
-@app.route('/admin/projects/<int:project_id>', methods=['GET'])
+@app.route('/api/admin/projects/<int:project_id>', methods=['GET'])
 @jwt_required()
 def get_admin_project(project_id):
     current_user = get_jwt_identity()['id']
@@ -1888,7 +1888,7 @@ def get_admin_project(project_id):
         return jsonify({'error':"you're not authorized "})
 
 # Update a project's provider ID and/or contract amount
-@app.route('/admin/projects/<int:project_id>', methods=['PUT'])
+@app.route('/api/admin/projects/<int:project_id>', methods=['PUT'])
 @jwt_required()
 def update_admin_project(project_id):
     current_user = get_jwt_identity()['id']
@@ -1907,7 +1907,7 @@ def update_admin_project(project_id):
         return jsonify({'error':"you're not authorized "})
 
 
-@app.route('/admin/transactions/<int:transaction_id>', methods=['GET'])
+@app.route('/api/admin/transactions/<int:transaction_id>', methods=['GET'])
 @jwt_required()
 def get_admin_transaction(transaction_id):
     current_user = get_jwt_identity()['id']
@@ -1919,7 +1919,7 @@ def get_admin_transaction(transaction_id):
     else:
         return jsonify({'error': 'You are not authorized to view this transaction.'})
 
-@app.route('/admin/transactions', methods=['GET'])
+@app.route('/api/admin/transactions', methods=['GET'])
 @jwt_required()
 def get_all_transactions():
     current_user = get_jwt_identity()['id']
@@ -1932,7 +1932,7 @@ def get_all_transactions():
         return jsonify({'error': "you're not authorized "})
 
 
-@app.route('/admin/payment-accounts', methods=['GET'])
+@app.route('/api/admin/payment-accounts', methods=['GET'])
 @jwt_required()
 def get_admin_payment_accounts():
     current_user = get_jwt_identity()['id']
@@ -1944,7 +1944,7 @@ def get_admin_payment_accounts():
     else:
         return jsonify({'error':"you're not authorized "})
 
-@app.route('/admin/payment-accounts/<int:account_id>', methods=['GET'])
+@app.route('/api/admin/payment-accounts/<int:account_id>', methods=['GET'])
 @jwt_required()
 def get_admin_payment_account(account_id):
     current_user = get_jwt_identity()['id']
@@ -1955,7 +1955,7 @@ def get_admin_payment_account(account_id):
         return jsonify({"payment_account": serialized_payment_account})
     else:
         return jsonify({'error':"you're not authorized "})
-@app.route('/admin/milestone_escrow_accounts', methods=['GET'])
+@app.route('/api/admin/milestone_escrow_accounts', methods=['GET'])
 @jwt_required()
 def get_all_milestone_escrow_accounts():
     current_user = get_jwt_identity()['id']
@@ -1967,7 +1967,7 @@ def get_all_milestone_escrow_accounts():
     else:
         return jsonify({'error':"you're not authorized "})
 
-@app.route('/admin/milestone_escrow_accounts/<int:account_id>', methods=['GET'])
+@app.route('/api/admin/milestone_escrow_accounts/<int:account_id>', methods=['GET'])
 @jwt_required()
 def get_milestone_escrow_account(account_id):
     current_user = get_jwt_identity()['id']
@@ -1978,7 +1978,7 @@ def get_milestone_escrow_account(account_id):
         return jsonify({"milestone_escrow_account": serialized_account})
     else:
         return jsonify({'error':"you're not authorized "})
-@app.route('/admin/milestones', methods=['GET'])
+@app.route('/api/admin/milestones', methods=['GET'])
 @jwt_required()
 def get_all_milestones():
     current_user = get_jwt_identity()['id']
@@ -1990,7 +1990,7 @@ def get_all_milestones():
     else:
         return jsonify({'error':"you're not authorized "})
 
-@app.route('/admin/milestones/<int:milestone_id>', methods=['GET'])
+@app.route('/api/admin/milestones/<int:milestone_id>', methods=['GET'])
 @jwt_required()
 def get_admin_milestone(milestone_id):
     current_user = get_jwt_identity()['id']
@@ -2002,7 +2002,7 @@ def get_admin_milestone(milestone_id):
     else:
         return jsonify({'error':"you're not authorized "})
 
-@app.route('/escrow_milestones', methods=['POST'])
+@app.route('/api/escrow_milestones', methods=['POST'])
 @jwt_required()
 def create_escrow_milestone():
     provider_id = get_jwt_identity()['id']
@@ -2035,7 +2035,7 @@ def create_escrow_milestone():
 
     return jsonify({'message': 'Escrow milestone created successfully'})
 
-@app.route('/admin/contracts', methods=['GET'])
+@app.route('/api/admin/contracts', methods=['GET'])
 @jwt_required()
 def get_all_contracts():
     current_user = get_jwt_identity()['id']
@@ -2048,7 +2048,7 @@ def get_all_contracts():
         return jsonify({'error': "you're not authorized"})
 
 
-@app.route('/admin/contracts/<int:id>', methods=['GET'])
+@app.route('/api/admin/contracts/<int:id>', methods=['GET'])
 @jwt_required()
 def get_contract(id):
     current_user = get_jwt_identity()['id']
@@ -2064,7 +2064,7 @@ def get_contract(id):
         return jsonify({'error': "you're not authorized"})
 
 
-@app.route('/admin/contracts/<int:id>', methods=['DELETE'])
+@app.route('/api/admin/contracts/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_contract(id):
     current_user = get_jwt_identity()['id']
@@ -2083,7 +2083,7 @@ def delete_contract(id):
 
 
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/api/webhook', methods=['POST'])
 def webhook():
     event = None
     payload = request.data
@@ -2137,7 +2137,7 @@ def webhook():
 
 
 
-@app.route('/balance', methods=['GET'])
+@app.route('/api/balance', methods=['GET'])
 @jwt_required()
 def get_balance():
     user_id = get_jwt_identity()['id']
@@ -2147,7 +2147,7 @@ def get_balance():
     return jsonify(payment_account.serialize()), 200
 
 
-@app.route('/companies', methods=['POST'])
+@app.route('/api/companies', methods=['POST'])
 def create_company():
     data = request.get_json()
     name = data.get('name')
@@ -2163,7 +2163,7 @@ def create_company():
     return jsonify({'success': True, 'message': 'Company created successfully'}), 201
 
 
-@app.route('/companies/<int:company_id>', methods=['PUT'])
+@app.route('/api/companies/<int:company_id>', methods=['PUT'])
 def edit_company(company_id):
     company = Companies.query.get(company_id)
 
@@ -2184,7 +2184,7 @@ def edit_company(company_id):
     return jsonify({'success': True, 'message': 'Company updated successfully'}), 200
 
 
-@app.route('/companies/<int:company_id>', methods=['DELETE'])
+@app.route('/api/companies/<int:company_id>', methods=['DELETE'])
 def delete_company(company_id):
     company = Companies.query.get(company_id)
 
@@ -2195,7 +2195,7 @@ def delete_company(company_id):
     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Company deleted successfully'}), 200
-@app.route('/companies/<int:company_id>', methods=['GET'])
+@app.route('/api/companies/<int:company_id>', methods=['GET'])
 def get_a_company(company_id):
     company = Companies.query.get(company_id)
     if not company:
@@ -2204,7 +2204,7 @@ def get_a_company(company_id):
 
     return jsonify(company.serialize()), 200
 
-@app.route('/companies', methods=['GET'])
+@app.route('/api/companies', methods=['GET'])
 def get_all_companies():
     companies = Companies.query.all()
 
@@ -2219,7 +2219,7 @@ def get_all_companies():
 
     return jsonify({'all_companies':company_list}), 200
 
-@app.route('/users/address', methods=['POST'])
+@app.route('/api/users/address', methods=['POST'])
 @jwt_required()
 def create_user_address():
     user_id = get_jwt_identity()["id"]
@@ -2242,7 +2242,7 @@ def create_user_address():
 
     return jsonify({'success': True, 'message': 'User address created successfully'}), 201
 
-@app.route('/users/address', methods=['PUT'])
+@app.route('/api/users/address', methods=['PUT'])
 def update_user_address():
     current_user_id = get_jwt_identity()["id"]
     user = Users.query.get(current_user_id)
@@ -2275,7 +2275,7 @@ def update_user_address():
 
     return jsonify({'success': True, 'message': 'Address updated successfully'}), 200
 
-@app.route('/users/address', methods=['GET'])
+@app.route('/api/users/address', methods=['GET'])
 @jwt_required()
 def get_user_address():
     user_id = get_jwt_identity()["id"]
@@ -2299,7 +2299,7 @@ def get_user_address():
     return jsonify({'address':address_data}), 200
 
 
-@app.route('/cometchat_email_notification', methods=['POST'])
+@app.route('/api/cometchat_email_notification', methods=['POST'])
 def chatnotificationwebhook():
     data = request.json  # Get the JSON data from the request
 
@@ -2464,7 +2464,7 @@ def generate_random_code(length):
     return code
 
 
-@app.route('/verifyemail/<string:public_id>/<string:token>', methods=['POST'])
+@app.route('/api/verifyemail/<string:public_id>/<string:token>', methods=['POST'])
 def verify_email(public_id,token):
     user = Users.query.filter_by(public_id=public_id).first()
     if user:
@@ -2575,7 +2575,7 @@ def send_reset_password_request():
         return jsonify({'message': 'There is no Goopim account with this'})
 
 
-@app.route('/reset/<string:public_id>/<string:token>', methods=['POST'])
+@app.route('/api/reset/<string:public_id>/<string:token>', methods=['POST'])
 def reset_password(public_id,token):
     user = Users.query.filter_by(public_id=public_id).first()
     data = request.get_json()
@@ -2600,7 +2600,7 @@ def reset_password(public_id,token):
     else:
         return  jsonify({'message':"Reset link expired"})
 
-@app.route('/reviews', methods=['POST'])
+@app.route('/api/reviews', methods=['POST'])
 @jwt_required()
 def create_review():
     data = request.get_json()
@@ -2647,7 +2647,7 @@ def update_average_rating(mapper, connection, review):
     db.session.commit()
 
 
-@app.route('/admindashboard', methods=['GET'])
+@app.route('/api/admindashboard', methods=['GET'])
 @jwt_required()
 def goopim_admindashboard():
     current_user = get_jwt_identity()['id']
@@ -2763,7 +2763,7 @@ def vector_db_status():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.route('/health', methods=["GET"])
+@app.route('/api/health', methods=["GET"])
 def health_check():
     return jsonify({"result": "hi there"})
 
