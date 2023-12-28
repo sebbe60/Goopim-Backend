@@ -6,7 +6,6 @@ on:
     branches: [ prod ]
 
 jobs:
-  
   DeployDev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
