@@ -30,5 +30,7 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} "
             cd ${APP_DIR} &&
+            git pull origin main --no-rebase &&
+
             git pull &&
             sudo -S < <(echo "${USER_PASSWORD}") systemctl restart gunicorn "
